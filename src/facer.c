@@ -2613,6 +2613,7 @@ static int acer_platform_profile_setup(void)
 		set_bit(PLATFORM_PROFILE_LOW_POWER,
 			platform_profile_handler.choices);
 
+		platform_profile_remove();
 		err = platform_profile_register(&platform_profile_handler);
 		if (err)
 			return err;
