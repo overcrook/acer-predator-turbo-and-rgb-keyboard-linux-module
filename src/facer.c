@@ -1020,6 +1020,15 @@ static const struct dmi_system_id acer_quirks[] __initconst = {
 		.driver_data = &quirk_acer_predator_v4,
 	},
 	{
+		.callback = dmi_matched,
+		.ident = "Acer Nitro AN17-41",
+		.matches = {
+			DMI_MATCH(DMI_SYS_VENDOR, "Acer"),
+			DMI_MATCH(DMI_PRODUCT_NAME, "Nitro AN17-41"),
+		},
+		.driver_data = &quirk_acer_predator_v4,
+	},
+	{
 		.callback = set_force_caps,
 		.ident = "Acer Aspire Switch 10E SW3-016",
 		.matches = {
@@ -3002,8 +3011,12 @@ static void acer_wmi_notify(u32 value, void *context)
 		acer_kbd_dock_event(&return_value);
 		break;
 	case WMID_GAMING_TURBO_KEY_EVENT:
-		if (return_value.key_num == 0x4)
-			acer_toggle_turbo();
+		if (return_value.key_num == 0x4) {
+			if (has_cap(ACER_CAP_PLATFORM_PROFILE))
+				acer_thermal_profile_change();
+			else
+				acer_toggle_turbo();
+		}
 		if (return_value.key_num == 0x5 && has_cap(ACER_CAP_PLATFORM_PROFILE))
 			acer_thermal_profile_change();
 		break;
